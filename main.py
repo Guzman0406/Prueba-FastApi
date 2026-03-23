@@ -49,5 +49,13 @@ def getMovies():
 def getMovies_list():
     return movie_list
 
+# Ruta para devolver una pelicula por id 
+@app.get("/movies/{id}", tags=["Movies"])
+def getMovie(id:int):
+    try:
+        for movie in movie_list: # Recorrer un arreglo por cada pelicula en la lista
+            if movie["id"] == id:
+                return movie
+    except Exception as e:
+        return {"message": str(e)}
 
- 
