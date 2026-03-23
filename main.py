@@ -59,3 +59,12 @@ def getMovie(id:int):
     except Exception as e:
         return {"message": str(e)}
 
+
+"""
+# Ruta de prueba para devolver por id (Formato HTML)
+@app.get("/movie/{id}", tags=["Movies"])
+def moviehtml(id: int):
+    for movie in movie_list:
+        if movie["id"] == id:
+            return HTMLResponse(f"<h1>{movie['title']}</h1>")
+"""
