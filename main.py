@@ -76,7 +76,7 @@ def get_movie_by_category(category: str):
         movie_category = [movie for movie in movie_list if movie["category"] == category]
         return movie_category
     except Exception as e:
-        return {"Mesagge" + str(e)}  
+        return {"Mesagge": str(e)}  
 
 
 ## POST ##
@@ -105,7 +105,8 @@ category: str = Body()
 
 # Ruta para actualizar una pelicula (id lo toma de la ruta)
 @app.put("/movies/{id}", tags=["Put_Movies"])
-def update_movie(title: str = Body(),
+def update_movie(id: int,
+title: str = Body(),
 year: int = Body(),
 rating: float = Body(),
 category: str = Body()
@@ -123,21 +124,15 @@ category: str = Body()
 
 
 ## DELETE ##
-@app.delete("/movie/{id}", tags=["Delete_Movies"])
-def delete_movie(title: str = Body(),
-year: int = Body(),
-rating: float = Body(),
-category: str = Body()
+@app.delete("/movies/{id}", tags=["Delete_Movies"])
+def delete_movie(id :int,
 ):
 
     try:
         for movie in movie_list:
             if movie["id"] == id:
-                movie["title"] = title
-                movie["year"] = year
-                movie["rating"] = rating
-                movie["category"] = category
-        return movie_list
+                movie_list.remove(movie) #Eliminar la pelicula
+        return movie_list   
     except Exception as e: 
-        return {"mesagge" + str(e)}
+        return {"mesagge": str(e)}
 
