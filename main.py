@@ -45,7 +45,7 @@ def getMovies():
     return movie_list
 
 # Ruta para devolver una lista de peliculas en formato JSON
-@app.get("/movies_list", tags=["Movies_list"])
+@app.get("/movies_list", tags=["Movies"])
 def getMovies_list():
     return movie_list
 
@@ -68,3 +68,13 @@ def moviehtml(id: int):
         if movie["id"] == id:
             return HTMLResponse(f"<h1>{movie['title']}</h1>")
 """
+
+# Ruta para devolver una lista de peliculas por categoria 
+@app.get("/movies/category/{category}", tags=["Movies"])
+def get_movie_by_category(category: str):
+    try:
+        movie_category = [movie for movie in movie_list if movie["category"] == category]
+        return movie_category
+    except Exception as e:
+        return {"Mesagge": "error: " + str(e)}  
+
