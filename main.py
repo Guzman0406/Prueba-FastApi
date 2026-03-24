@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse #Nos permite retornar HTML
+from fastapi import Body #Permite recibir datos en formato JSON
 
 # Crear una instancia de FastAPI
 app = FastAPI()
@@ -42,7 +43,6 @@ def home():
 @app.get("/movies", tags=["Movies"])
 def getMovies():
     return HTMLResponse("<h1>Hello World</h1>")
-    return movie_list
 
 # Ruta para devolver una lista de peliculas en formato JSON
 @app.get("/movies_list", tags=["Movies"])
@@ -76,5 +76,24 @@ def get_movie_by_category(category: str):
         movie_category = [movie for movie in movie_list if movie["category"] == category]
         return movie_category
     except Exception as e:
-        return {"Mesagge": "error: " + str(e)}  
+        return {"Mesagge" + str(e)}  
 
+
+## POST ##
+
+
+@app.post("/movies", tags=["Post_Movies"])
+def create_movie(id: int = Body(), 
+title: str = Body(), 
+year: int = Body(), 
+rating: float = Body(), 
+category: str = Body()):
+
+    movie_list.append({
+        "id": id,
+        "title": title,
+        "year": year,
+        "rating": rating,
+        "category": category
+    })
+    return movie_list
