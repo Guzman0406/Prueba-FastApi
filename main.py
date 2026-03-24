@@ -87,7 +87,8 @@ def create_movie(id: int = Body(),
 title: str = Body(), 
 year: int = Body(), 
 rating: float = Body(), 
-category: str = Body()):
+category: str = Body()
+):
 
     movie_list.append({
         "id": id,
@@ -97,3 +98,46 @@ category: str = Body()):
         "category": category
     })
     return movie_list
+
+
+
+## PUT ##
+
+# Ruta para actualizar una pelicula (id lo toma de la ruta)
+@app.put("/movies/{id}", tags=["Put_Movies"])
+def update_movie(title: str = Body(),
+year: int = Body(),
+rating: float = Body(),
+category: str = Body()
+):
+    try:
+        for movie in movie_list: # Por cada pelicula en la lista
+            if movie["id"] == id: # Si el id de la pelicula es igual al id de la ruta
+                movie["title"] = title
+                movie["year"] = year
+                movie["rating"] = rating
+                movie["category"] = category
+        return movie 
+    except Exception as e:
+        return {"message": str(e)}
+
+
+## DELETE ##
+@app.delete("/movie/{id}", tags=["Delete_Movies"])
+def delete_movie(title: str = Body(),
+year: int = Body(),
+rating: float = Body(),
+category: str = Body()
+):
+
+    try:
+        for movie in movie_list:
+            if movie["id"] == id:
+                movie["title"] = title
+                movie["year"] = year
+                movie["rating"] = rating
+                movie["category"] = category
+        return movie_list
+    except Exception as e: 
+        return {"mesagge" + str(e)}
+
