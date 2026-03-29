@@ -1,9 +1,26 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse #Nos permite retornar HTML
 from fastapi import Body #Permite recibir datos en formato JSON
+from pydantic import BaseModel # permitir crear una clase 
+from typing import Optional, List # permitir que un atributo sea opcional y que un atributo sea una lista
 
 # Crear una instancia de FastAPI
 app = FastAPI()
+
+# Clase para una instancia de pelicula
+class Movie (BaseModel):
+    id: Optional[int] = None
+    title: str
+    year: int
+    rating: float
+    category: str
+
+class MovieUpdate(BaseModel):
+    title: str
+    year: int
+    rating: float
+    category: str
+
 
 app.title = "Mi primer Api con FastApi"
 app.version = "1.0.0"
@@ -39,19 +56,16 @@ movie_list = [
 def home():
     return "FastApi funcionando ahuevo" 
 
-# Ruta para devolver un HTML
-@app.get("/movies", tags=["Movies"])
-def getMovies():
-    return HTMLResponse("<h1>Hello World</h1>")
 
 # Ruta para devolver una lista de peliculas en formato JSON
-@app.get("/movies_list", tags=["Movies"])
+@app.get("/movies", tags=["Movies"])
 def getMovies_list():
     return movie_list
 
+
 # Ruta para devolver una pelicula por id 
 @app.get("/movies/{id}", tags=["Movies"])
-def getMovie(id:int):
+def getMovie(id:int)-> Movie:
     try:
         for movie in movie_list: # Recorrer un arreglo por cada pelicula en la lista
             if movie["id"] == id:
@@ -59,15 +73,6 @@ def getMovie(id:int):
     except Exception as e:
         return {"message": str(e)}
 
-
-"""
-# Ruta de prueba para devolver por id (Formato HTML)
-@app.get("/movie/{id}", tags=["Movies"])
-def moviehtml(id: int):
-    for movie in movie_list:
-        if movie["id"] == id:
-            return HTMLResponse(f"<h1>{movie['title']}</h1>")
-"""
 
 # Ruta para devolver una lista de peliculas por categoria 
 @app.get("/movies/category/{category}", tags=["Movies"])
@@ -79,45 +84,28 @@ def get_movie_by_category(category: str):
         return {"Mesagge": str(e)}  
 
 
-## POST ##
 
-
+## POST mediante clase
 @app.post("/movies", tags=["Post_Movies"])
-def create_movie(id: int = Body(), 
-title: str = Body(), 
-year: int = Body(), 
-rating: float = Body(), 
-category: str = Body()
-):
-
-    movie_list.append({
-        "id": id,
-        "title": title,
-        "year": year,
-        "rating": rating,
-        "category": category
-    })
-    return movie_list
-
+def create_movie(movie: Movie) -> List[Movie]:
+    movie_list.append(movie.model_dump()) # Diccionario para que pueda ser insertado 
+    return movie_list 
 
 
 ## PUT ##
-
 # Ruta para actualizar una pelicula (id lo toma de la ruta)
 @app.put("/movies/{id}", tags=["Put_Movies"])
-def update_movie(id: int,
-title: str = Body(),
-year: int = Body(),
-rating: float = Body(),
-category: str = Body()
-):
+def update_movie(
+    id: int,
+    movie: MovieUpdate
+) -> List[Movie]:
     try:
-        for movie in movie_list: # Por cada pelicula en la lista
-            if movie["id"] == id: # Si el id de la pelicula es igual al id de la ruta
-                movie["title"] = title
-                movie["year"] = year
-                movie["rating"] = rating
-                movie["category"] = category
+        for item in movie_list: # Por cada pelicula en la lista
+            if item["id"] == id: # Si el id de la pelicula es igual al id de la ruta
+                item["title"] = movie.title
+                item["year"] = movie.year
+                item["rating"] = movie.rating
+                item["category"] = movie.category
         return movie 
     except Exception as e:
         return {"message": str(e)}
