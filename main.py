@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse #Nos permite retornar HTML
-from fastapi import Body #Permite recibir datos en formato JSON
-from pydantic import BaseModel # permitir crear una clase 
+from fastapi import Body, Path #Permite recibir datos en formato JSON
+from pydantic import BaseModel, Field # permitir crear una clase y definir datos del body
 from typing import Optional, List # permitir que un atributo sea opcional y que un atributo sea una lista
-from fastapi import Field # Permite definir los datos en el body
 
 # Crear una instancia de FastAPI
 app = FastAPI()
@@ -26,7 +25,7 @@ class MovieCreate(BaseModel):
     title: str
     year: int = Field(ge=1900, le=2025)
     rating: float = Field(ge=0, le=10)
-    category: str = Field(min_length=1, max_length=15)
+    category: str = Field(min_length=1, max_length=15   )
 
 
 app.title = "Mi primer Api con FastApi"
@@ -72,7 +71,7 @@ def getMovies_list():
 
 # Ruta para devolver una pelicula por id 
 @app.get("/movies/{id}", tags=["Movies"])
-def getMovie(id:int)-> Movie:
+def getMovie(id:int = Path(gt=0))-> Movie | dict: # Path para validar que el id sea mayor a 0
     try:
         for movie in movie_list: # Recorrer un arreglo por cada pelicula en la lista
             if movie["id"] == id:
@@ -83,7 +82,7 @@ def getMovie(id:int)-> Movie:
 
 # Ruta para devolver una lista de peliculas por categoria 
 @app.get("/movies/category/{category}", tags=["Movies"])
-def get_movie_by_category(category: str):
+def get_movie_by_category(category: str = Path(min_length=1, max_length=30)) -> Movie | dict:  # La categoria debe tener entre 1 y 30 caracteres
     try:
         movie_category = [movie for movie in movie_list if movie["category"] == category]
         return movie_category
