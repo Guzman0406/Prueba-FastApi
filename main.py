@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse #Nos permite retornar HTML
 from fastapi import Body #Permite recibir datos en formato JSON
 from pydantic import BaseModel # permitir crear una clase 
 from typing import Optional, List # permitir que un atributo sea opcional y que un atributo sea una lista
+from fastapi import Field # Permite definir los datos en el body
 
 # Crear una instancia de FastAPI
 app = FastAPI()
@@ -20,6 +21,12 @@ class MovieUpdate(BaseModel):
     year: int
     rating: float
     category: str
+
+class MovieCreate(BaseModel):
+    title: str
+    year: int = Field(ge=1900, le=2025)
+    rating: float = Field(ge=0, le=10)
+    category: str = Field(min_length=1, max_length=15)
 
 
 app.title = "Mi primer Api con FastApi"
@@ -87,7 +94,7 @@ def get_movie_by_category(category: str):
 
 ## POST mediante clase
 @app.post("/movies", tags=["Post_Movies"])
-def create_movie(movie: Movie) -> List[Movie]:
+def create_movie(movie: MovieCreate):
     movie_list.append(movie.model_dump()) # Diccionario para que pueda ser insertado 
     return movie_list 
 
